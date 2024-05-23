@@ -1,0 +1,72 @@
+﻿@page "/BootstrapConverter"
+@rendermode InteractiveServer
+
+<p>Go to <a href="https://icons.getbootstrap.com/" target="_blank">Bootstrap</a> and choose your icon</p>
+<p>Copy the SVG from "Copy HTML" and paste below</p>
+<p>Paste the Converted SVG into NavMenu.razor.css</p>
+<h3>Convert Bootstrap Icon SVG</h3>
+
+<div>
+    <textarea @bind="inputSvg" @oninput="ConvertSvg" placeholder="Paste your SVG here" rows="10" cols="50"></textarea>
+</div>
+
+<div>
+    <h4>Converted SVG</h4>
+    <textarea readonly rows="10" cols="50">@convertedSvg</textarea>
+</div>
+
+
+<br />
+<br />
+<p>Credit to the author Matt Frear - <a href="https://mattfrear.com/2024/02/27/customize-blazors-navmenu/" target="_blank">Add icons to Blazor’s NavMenu in .NET 8</a></p>
+
+@code {
+    private string? inputSvg;
+    private string? convertedSvg;
+
+    private void ConvertSvg(ChangeEventArgs e)
+    {
+        inputSvg = e.Value?.ToString();
+        if (string.IsNullOrWhiteSpace(inputSvg))
+        {
+            convertedSvg = string.Empty;
+            return;
+        }
+
+        string svgWithSingleQuotation = inputSvg.Replace("\"", "'");
+
+        string svgWithWhiteColor = svgWithSingleQuotation.Replace("currentColor", "white");
+
+        string encodedSvg = svgWithWhiteColor.Replace("<", "%3C").Replace(">", "%3E");
+
+        convertedSvg = encodedSvg.Replace("\n", "").Replace("\r", "");
+
+        string className = findClassName(inputSvg);
+        convertedSvg = @$".{className}-nav-menu {{background-image: url(""data:image/svg+xml,{convertedSvg}"");}}";
+    }
+
+    private string findClassName(string inputSvg)
+    {
+        string startIndicator = "class=\"";
+        int startIndex = inputSvg.IndexOf(startIndicator);
+
+        startIndex += startIndicator.Length;
+        int endIndex = inputSvg.IndexOf("\"", startIndex);
+        if (endIndex != -1)
+        {
+            string classValue = inputSvg.Substring(startIndex, endIndex - startIndex);
+            int firstSpaceIndex = classValue.IndexOf(' ');  
+            if (firstSpaceIndex != -1)
+            {
+                string result = classValue.Substring(firstSpaceIndex + 1);  
+                return result; 
+            }
+            else
+            {
+                return "Invalid Svg";
+            }
+        }
+        return "";
+    }
+
+}
