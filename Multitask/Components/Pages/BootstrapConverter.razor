@@ -1,5 +1,6 @@
 ﻿@page "/BootstrapConverter"
 @rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
 
 <p>Go to <a href="https://icons.getbootstrap.com/" target="_blank">Bootstrap</a> and choose your icon</p>
 <p>Copy the SVG from "Copy HTML" and paste below</p>
@@ -50,6 +51,7 @@
         string startIndicator = "class=\"";
         int startIndex = inputSvg.IndexOf(startIndicator);
 
+        if(startIndex == -1 || startIndex == 0){ return "Invalid Svg"; }
         startIndex += startIndicator.Length;
         int endIndex = inputSvg.IndexOf("\"", startIndex);
         if (endIndex != -1)
@@ -70,3 +72,16 @@
     }
 
 }
+
+@* <input @bind="TextToCopy" />
+<button @onclick="CopyToClipboard">Copy to Clipboard</button>
+
+@code {
+    string? TextToCopy { get; set; }
+
+    async Task CopyToClipboard()
+    {
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", TextToCopy);
+    }
+}
+ *@
