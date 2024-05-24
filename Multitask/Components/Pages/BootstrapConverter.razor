@@ -16,7 +16,7 @@
     <textarea readonly rows="10" cols="50">@convertedSvg</textarea>
 </div>
 
-
+<button @onclick="CopyToClipboard">Copy to Clipboard</button>
 <br />
 <br />
 <p>Credit to the author Matt Frear - <a href="https://mattfrear.com/2024/02/27/customize-blazors-navmenu/" target="_blank">Add icons to Blazor’s NavMenu in .NET 8</a></p>
@@ -70,18 +70,10 @@
         }
         return "";
     }
-
-}
-
-@* <input @bind="TextToCopy" />
-<button @onclick="CopyToClipboard">Copy to Clipboard</button>
-
-@code {
-    string? TextToCopy { get; set; }
-
     async Task CopyToClipboard()
     {
-        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", TextToCopy);
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", convertedSvg);
     }
 }
- *@
+
+
